@@ -8,7 +8,7 @@ interface RiskGaugeProps {
 }
 
 export const RiskGauge = ({ probability }: RiskGaugeProps) => {
-    const radius = 70;
+    const radius = 80;
     const stroke = 12;
     const normalizedRadius = radius - stroke * 2;
     const circumference = normalizedRadius * 2 * Math.PI;
@@ -48,9 +48,12 @@ export const RiskGauge = ({ probability }: RiskGaugeProps) => {
                     className="transition-all duration-1000 ease-out"
                 />
             </svg>
-            <div className="absolute flex flex-col items-center">
-                <span className="text-4xl font-extrabold text-slate-50">{probability}%</span>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Defect Chance</span>
+            <div className="absolute flex flex-col items-center justify-center">
+                <div className="flex items-baseline">
+                    <span className="text-5xl font-black text-slate-50 tracking-tighter">{probability}</span>
+                    <span className="text-xl font-bold text-slate-500 ml-0.5">%</span>
+                </div>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Defect Score</span>
             </div>
         </div>
     );
