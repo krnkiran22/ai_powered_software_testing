@@ -11,6 +11,27 @@ import { useAnalysis } from '@/hooks/useAnalysis';
 import { AnalyzeIcon, UploadIcon, CodeIcon, SparklesIcon } from '@/components/icons';
 import { AnalysisBarChart } from './AnalysisBarChart';
 
+const SAMPLE_CODE = `def process_user_data(users):
+    results = []
+    for user in users:
+        # Potential vulnerability: insecure direct object reference
+        user_profile = get_profile_from_db(user.id)
+        
+        # Risk: potential division by zero if total_points is 0
+        average_score = user.points / user.total_points
+        
+        if user.is_active:
+            results.append({
+                "name": user.name,
+                "score": average_score
+            })
+    return results
+
+def get_profile_from_db(profile_id):
+    # Missing authentication check and SQL injection risk
+    return db.execute_query(f"SELECT * FROM profiles WHERE id = {profile_id}")
+`;
+
 export const AnalyzeContainer = () => {
     const [activeTab, setActiveTab] = useState('upload');
     const [code, setCode] = useState('');
@@ -39,6 +60,13 @@ export const AnalyzeContainer = () => {
 
     const onAnalyze = () => {
         analyzeCode(code);
+    };
+
+    const handleLoadSample = () => {
+        setCode(SAMPLE_CODE);
+        setLanguage('python');
+        setActiveTab('paste');
+        setFileName('sample.py');
     };
 
     return (
@@ -90,9 +118,14 @@ export const AnalyzeContainer = () => {
                             )}
                         </CardBody>
                         <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between">
-                            <Button variant="outline" size="sm" onClick={handleClear} disabled={!code || isAnalyzing}>
-                                Clear
-                            </Button>
+                            <div className="flex space-x-3">
+                                <Button variant="outline" size="sm" onClick={handleLoadSample} disabled={isAnalyzing}>
+                                    Load Sample
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={handleClear} disabled={!code || isAnalyzing}>
+                                    Clear
+                                </Button>
+                            </div>
                             <Button size="lg" className="px-10" onClick={onAnalyze} disabled={!code || isAnalyzing} isLoading={isAnalyzing}>
                                 <AnalyzeIcon className="w-4 h-4 mr-2" />
                                 Analyze Code
