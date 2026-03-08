@@ -9,6 +9,12 @@ const client = new OpenAI({
 
 export async function POST(req: NextRequest) {
     try {
+        if (!process.env.GROQ_API_KEY) {
+            return NextResponse.json({
+                error: 'GROQ_API_KEY is not configured in environment variables. Please add it to .env.local'
+            }, { status: 500 });
+        }
+
         const { code } = await req.json();
 
         if (!code) {
@@ -16,7 +22,7 @@ export async function POST(req: NextRequest) {
         }
 
         const systemPrompt = `
-You are an expert software security researcher and bug hunter. 
+You are an expert software security researcher and bug hunter.
 Analyze the following code for potential bugs, security vulnerabilities, and logic defects.
 Return your analysis strictly as a JSON object with the following structure:
 {
@@ -42,21 +48,21 @@ Return your analysis strictly as a JSON object with the following structure:
     "recommendations": [string]
 }
 
-Ensure the response is valid JSON and nothing else.
+Ensure the response is valid JSON and nothing else. Do not include any markdown formatting like \`\`\`json.
 `;
 
         const userPrompt = `Analyze this code:\n\n${code}`;
 
-        // Using chat.completions.create as it's the standard for Groq's OpenAI-compatible API
-        // The user suggested responses.create but that might be a confusion with other SDKs or specialized endpoints.
-        // We use the model suggested by the user if it works, otherwise a fallback to a known Groq model.
+        // Standard Groq models: llama-3.3-70b-versatile, llama-3.1-8b-instant, etc.
+        // The user suggested "openai/gpt-oss-20b", which might be available via a specific provider or setup.
+        // We'll use llama-3.3-70b-versatile as a high-quality default.
         const response = await client.chat.completions.create({
-            model: "llama-3.3-70b-versatile", // Using a reliable Groq model as default, can be changed to process.env.GROQ_MODEL
+            model: "llama-3.3-70b-versatile",
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
             ],
-            response_format: { type: 'json_object' }
+            temperature: 0.1,
         });
 
         const content = response.choices[0]?.message?.content;
@@ -65,7 +71,9 @@ Ensure the response is valid JSON and nothing else.
             throw new Error('Empty response from AI');
         }
 
-        const analysisResult = JSON.parse(content);
+        // Clean content in case the model adds markdown tags despite instructions
+        const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
+        const analysisResult = JSON.parse(cleanContent);
         return NextResponse.json(analysisResult);
 
     } catch (error: any) {
