@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Initialize the OpenAI client with Groq configuration
-const client = new OpenAI({
-    apiKey: process.env.GROQ_API_KEY,
-    baseURL: "https://api.groq.com/openai/v1",
-});
-
 export async function POST(req: NextRequest) {
     try {
         if (!process.env.GROQ_API_KEY) {
@@ -14,6 +8,12 @@ export async function POST(req: NextRequest) {
                 error: 'GROQ_API_KEY is not configured in environment variables. Please add it to .env.local'
             }, { status: 500 });
         }
+
+        // Initialize the OpenAI client with Groq configuration
+        const client = new OpenAI({
+            apiKey: process.env.GROQ_API_KEY,
+            baseURL: "https://api.groq.com/openai/v1",
+        });
 
         const { code } = await req.json();
 
@@ -74,6 +74,15 @@ Ensure the response is valid JSON and nothing else. Do not include any markdown 
         // Clean content in case the model adds markdown tags despite instructions
         const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
         const analysisResult = JSON.parse(cleanContent);
+        
+        // Calculate actual LOC (including empty lines)
+        const actualLoc = code.split('\n').length;
+        
+        // Override the LOC in metrics with actual count
+        if (analysisResult.metrics) {
+            analysisResult.metrics.loc = actualLoc;
+        }
+        
         return NextResponse.json(analysisResult);
 
     } catch (error: any) {
