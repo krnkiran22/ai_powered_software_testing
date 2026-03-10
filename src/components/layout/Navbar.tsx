@@ -23,6 +23,7 @@ export const Navbar = () => {
         { name: 'Home', href: '/', icon: null },
         { name: 'Chat', href: '/chat', icon: <ChatIcon className="w-4 h-4 mr-2" /> },
         { name: 'Analyze', href: '/analyze', icon: <AnalyzeIcon className="w-4 h-4 mr-2" /> },
+        { name: 'Docs', href: '/docs', icon: null },
     ];
 
     return (
@@ -56,13 +57,6 @@ export const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
-                        <div className="w-px h-6 bg-slate-800 mx-4" />
-                        <Link href="https://github.com" target="_blank">
-                            <Button variant="outline" size="sm" className="space-x-2">
-                                <GitHubIcon className="w-4 h-4" />
-                                <span>GitHub</span>
-                            </Button>
-                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}

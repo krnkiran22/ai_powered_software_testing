@@ -7,7 +7,7 @@ export const Footer = () => {
     return (
         <footer className="bg-slate-950 border-t border-slate-800 py-12">
             <Container>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {/* Brand Column */}
                     <div className="col-span-1 md:col-span-2 space-y-4">
                         <Link href="/" className="flex items-center space-x-2">
@@ -22,11 +22,11 @@ export const Footer = () => {
                             Empowering developers with AI-driven testing and defect prediction.
                             Detect bugs before they reach production with our state-of-the-art machine learning models.
                         </p>
-                        <div className="flex space-x-4">
+                        {/* <div className="flex space-x-4">
                             <Link href="https://github.com" className="text-slate-500 hover:text-slate-100 transition-colors">
                                 <GitHubIcon className="w-5 h-5" />
                             </Link>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Links Column */}
@@ -37,16 +37,6 @@ export const Footer = () => {
                             <li><Link href="/chat" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">AI Chat</Link></li>
                             <li><Link href="/analyze" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">Code Analysis</Link></li>
                             <li><Link href="/docs" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">Documentation</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Research Column */}
-                    <div className="space-y-4">
-                        <h3 className="text-slate-100 font-semibold uppercase tracking-wider text-xs">Research</h3>
-                        <ul className="space-y-2">
-                            <li><Link href="#" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">Paper (IJITEE 2020)</Link></li>
-                            <li><Link href="#" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">PROMISE Dataset</Link></li>
-                            <li><Link href="#" className="text-slate-400 hover:text-sky-400 text-sm transition-colors">Model Benchmarks</Link></li>
                         </ul>
                     </div>
                 </div>
