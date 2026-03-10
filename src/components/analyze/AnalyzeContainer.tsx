@@ -37,6 +37,7 @@ export const AnalyzeContainer = () => {
     const [code, setCode] = useState('');
     const [fileName, setFileName] = useState<string | null>(null);
     const [language, setLanguage] = useState('python');
+    const [projectName, setProjectName] = useState('');
 
     const { isAnalyzing, result, analyzeCode, clearAnalysis } = useAnalysis();
 
@@ -55,6 +56,7 @@ export const AnalyzeContainer = () => {
     const handleClear = () => {
         setCode('');
         setFileName(null);
+        setProjectName('');
         clearAnalysis();
     };
 
@@ -87,6 +89,20 @@ export const AnalyzeContainer = () => {
                             />
                         </CardHeader>
                         <CardBody className="p-6">
+                            {/* File Name Input */}
+                            <div className="mb-4">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                                    File Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={projectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                    placeholder="e.g., auth.py, payment.js, UserService.java"
+                                    className="w-full bg-slate-800/70 border border-slate-700 text-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent placeholder:text-slate-500"
+                                />
+                            </div>
+
                             {activeTab === 'upload' ? (
                                 <FileUploader
                                     onFileSelect={handleFileSelect}
@@ -151,7 +167,7 @@ export const AnalyzeContainer = () => {
 
                 {/* Results Panel */}
                 <div className="lg:sticky lg:top-24">
-                    <ResultsPanel result={result} isAnalyzing={isAnalyzing} />
+                    <ResultsPanel result={result} isAnalyzing={isAnalyzing} projectName={projectName || fileName || 'Untitled Analysis'} />
                 </div>
             </div>
 
