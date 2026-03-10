@@ -50,10 +50,10 @@ export const RiskGauge = ({ probability }: RiskGaugeProps) => {
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
                 <div className="flex items-baseline">
-                    <span className="text-5xl font-black text-slate-50 tracking-tighter">{probability}</span>
-                    <span className="text-xl font-bold text-slate-500 ml-0.5">%</span>
+                    <span className="text-3xl font-black text-slate-50 tracking-tighter">{probability}</span>
+                    <span className="text-lg font-bold text-slate-500 ml-0.5">%</span>
                 </div>
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Defect Score</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.15em] mt-0.5">Defect Score</span>
             </div>
         </div>
     );
