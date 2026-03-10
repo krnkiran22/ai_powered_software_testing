@@ -27,10 +27,16 @@ export const useChat = () => {
     const sendMessage = useCallback(async (content: string, code?: { language: string; value: string }) => {
         if (!content.trim() && !code) return;
 
+        // Build the message content
+        let messageContent = content;
+        if (code) {
+            messageContent = `${content}\n\n\`\`\`${code.language}\n${code.value}\n\`\`\``;
+        }
+
         const userMessage: Message = {
             id: Date.now().toString(),
             role: 'user',
-            content,
+            content: messageContent,
             timestamp: new Date(),
             code,
         };
@@ -38,18 +44,48 @@ export const useChat = () => {
         setMessages((prev) => [...prev, userMessage]);
         setIsLoading(true);
 
-        // Simulate AI response
-        setTimeout(() => {
+        try {
+            // Call the chat API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    messages: [...messages, userMessage].map(msg => ({
+                        role: msg.role,
+                        content: msg.content
+                    }))
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get response from AI');
+            }
+
+            const data = await response.json();
+            
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: simulateAIResponse(content, code),
+                content: data.content,
                 timestamp: new Date(),
             };
+            
             setMessages((prev) => [...prev, assistantMessage]);
+        } catch (error) {
+            console.error('Chat error:', error);
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: 'Sorry, I encountered an error processing your message. Please try again.',
+                timestamp: new Date(),
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+        } finally {
             setIsLoading(false);
-        }, 1500);
-    }, []);
+        }
+    }, [messages]);
 
     const clearChat = useCallback(() => {
         setMessages([
@@ -70,23 +106,3 @@ export const useChat = () => {
     };
 };
 
-function simulateAIResponse(content: string, code?: { language: string; value: string }): string {
-    if (code) {
-        return `I've analyzed your ${code.language} code. I found a potential risk of division by zero if the input \`b\` is 0. Here's a safer version with input validation:
-
-\`\`\`python
-def divide(a, b):
-    if b == 0:
-        raise ValueError("Cannot divide by zero")
-    return a / b
-\`\`\`
-
-Would you like me to generate unit tests for this function?`;
-    }
-
-    if (content.toLowerCase().includes('test')) {
-        return "To write effective unit tests, you should follow the AAA pattern: Arrange, Act, and Assert. Would you like me to show you an example using Pytest or Jest?";
-    }
-
-    return "That's an interesting question about software testing. Based on best practices, you should aim for high branch coverage rather than just line coverage to ensure all logical paths are verified.";
-}
